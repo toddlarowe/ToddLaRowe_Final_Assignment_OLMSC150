@@ -1,0 +1,98 @@
+<html>
+
+  <head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> </script>
+
+      <title>My GigBook - Lyric Search</title>
+
+  </head>
+
+  <style>
+
+    body {
+      text-align: center;
+      font-family: arial;
+      background-image: url("bgd-image.jpg");
+      background-position: center;
+    }
+
+  </style>
+
+  <body>
+
+    <div><img src="lyrics-search-title.png"></img></div>
+    <p>Enter the artist name and song you're searching for and your lyrics will be displayed below.
+
+      <div id="search">
+      <b>Artist Name: </b><input type="text" id="artist">
+      <b>Song Title: </b><input type="text" id="title"><p>
+      <button onclick="musixmatchResults()">Search</button>
+    </div>
+
+    <div id="results"></div>
+
+    <div id="lyrics"></div>
+
+    <div><h6>lyrics provided courtesy of musixmatch</h6></div>
+
+  </body>
+
+  <script language="javascript">
+
+  function musixmatchResults(myData) {
+
+      document.getElementById("artist");
+      console.log(artist.value);
+
+      document.getElementById("title");
+      console.log(title.value);
+
+      if(artist.value == "") {
+        alert("Please enter an artist name");
+        return false;
+      }
+
+      if(title.value == "") {
+        alert("Please enter a song title");
+        return false;
+      }
+
+      let getTrackInfo = document.createElement("script");
+          getTrackInfo.src = "http://api.musixmatch.com/ws/1.1/track.search?apikey=********&q_artist=" + artist.value + "&q_track=" + title.value +  "&page_size=10&callback=musixmatchTrackId&format=jsonp";
+            document.body.appendChild(getTrackInfo);
+            console.log(getTrackInfo.src);
+};
+
+    function musixmatchTrackId(myData) {
+      if(myData.message.header.available == 0) {
+            alert("No songs were found. Please search again.");
+            location.reload();
+          }
+          let trackId = myData.message.body.track_list[0].track.track_id;
+            console.log(trackId);
+
+            document.getElementById("results").innerHTML = "";
+            document.getElementById("lyrics").innerHTML = "";
+
+          let myInfoDiv =  document.getElementById("results");
+            myInfoDiv.innerHTML += "<div><pre><h1>" + myData.message.body.track_list[0].track.track_name + "</h1></pre><pre><h2>by " + myData.message.body.track_list[0].track.artist_name + "</h2></pre><pre><h3> from the album " + myData.message.body.track_list[0].track.album_name + "</h3></pre></div>";
+
+          let getLyrics = document.createElement("script");
+            getLyrics.src = "http://api.musixmatch.com/ws/1.1/track.lyrics.get?apikey=********&track_id=" + trackId +  "&page_size=10&callback=musixmatchLyrics&format=jsonp";
+              document.body.appendChild(getLyrics);
+              console.log(getLyrics.src);
+};
+
+    function musixmatchLyrics(myData) {
+          let myDiv = document.getElementById("lyrics");
+            myDiv.innerHTML += "<div><pre>" + myData.message.body.lyrics.lyrics_body + "</pre></div>";
+              console.log(myData);
+};
+
+  </script>
+
+  <script type="text/javascript" src="http://tracking.musixmatch.com/t1.0/AMa6hJCIEzn1v8RuOP">
+  </script>
+
+</html>
